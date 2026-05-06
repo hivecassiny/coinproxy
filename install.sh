@@ -160,6 +160,12 @@ install_bin() {
     prompt "Web listen [${DEFAULT_LISTEN}]: "
     read -r WEB_LISTEN < /dev/tty || WEB_LISTEN=""
     WEB_LISTEN="${WEB_LISTEN:-$DEFAULT_LISTEN}"
+    # 用户填了纯端口号（如 "8088"）补一个冒号，net.Listen 才能识别
+    case "$WEB_LISTEN" in
+        *:*) ;;
+        ''|*[!0-9]*) ;;
+        *) WEB_LISTEN=":${WEB_LISTEN}" ;;
+    esac
 
     # 首次安装写一个最小 config.yaml；如果用户已经有就不动
     if [ ! -f "${CONFIG_DIR}/config.yaml" ]; then
